@@ -50,6 +50,11 @@ def train_network(network, training_set, batch_size):
         index = last_index
         last_index = min(last_index + batch_size, len(training_set))
 
+
+def get_result(input):
+    return np.argmax(input)
+
+
 def Test():
     net = Net.Network(6, [5, 3], [Nl.ReLU, Nl.ReLU], [Nl.ReLu_derivative, Nl.ReLu_derivative], 2)
     data1 = np.array([0, 0, 0, 0, 0, 0]).reshape((6, 1))
@@ -66,6 +71,7 @@ def Test():
     expected = [expected1, expected2, expected3, expected4, expected5]
     training_set = [list(a) for a in zip(data, expected)]
     train_network(net, training_set, 3)
+    get_result(np.array([2, 3, 1, 0]).reshape((4, 1)))
     #epoch(net, training_set)
 
 

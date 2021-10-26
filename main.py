@@ -36,16 +36,17 @@ def nyan():
     network = Net.Network(input_size=784, sizes=[10, 8], activation_functions=[Nl.ReLU, Nl.ReLU],
                           derivatives=[Nl.ReLu_derivative, Nl.ReLu_derivative], output_size=10)
     print("zabawa rozpoczeta")
-    for i in range(100):
+    for i in range(15):
         print(i)
         Tr.train_network(network, training_set, 70)
-    image, label = training_set[0][0], training_set[0][1]
-    network.process_input(image)
 
-    print("wynik")
-    print(network.output)
-    print("prawda")
-    print(label)
+    sum = 0
+    for i in range(50):
+        image, label = training_set[0][0], training_set[0][1]
+        network.process_input(image)
+        sum = sum + (label[Tr.get_result(network.output)] == 1)
+    print(sum / 50)
+
 
 
 # Press the green button in the gutter to run the script.

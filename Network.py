@@ -27,6 +27,8 @@ class Network:
             out = out + layer.__str__()
         return out
 
+
+
 def test():
     net = Network(3, [4, 4, 3], [Nl.ReLU, Nl.ReLU, Nl.ReLU], [Nl.ReLu_derivative, Nl.ReLu_derivative, Nl.ReLu_derivative], 3)
     input = np.array([5, 1, 2]).reshape((3, 1))
