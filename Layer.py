@@ -7,7 +7,7 @@ def sigmoid(values):
 
 
 def sigmoid_derivative(values):
-    return sigmoid(1 - sigmoid(values))
+    return np.exp(-values) / ((np.exp(-values) + 1) ** 2)
 
 
 def tanh(values):

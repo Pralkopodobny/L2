@@ -33,19 +33,19 @@ def prepare_training_set():
 
 def nyan():
     training_set = prepare_training_set()
-    network = Net.Network(input_size=784, sizes=[10, 8], activation_functions=[Nl.ReLU, Nl.ReLU],
-                          derivatives=[Nl.ReLu_derivative, Nl.ReLu_derivative], output_size=10)
+    network = Net.Network(input_size=784, sizes=[10, 8], activation_functions=[Nl.sigmoid, Nl.sigmoid],
+                          derivatives=[Nl.sigmoid_derivative, Nl.sigmoid_derivative], output_size=10)
     print("zabawa rozpoczeta")
     for i in range(15):
         print(i)
         Tr.train_network(network, training_set, 70)
 
     sum = 0
-    for i in range(50):
-        image, label = training_set[0][0], training_set[0][1]
+    for image, label in training_set:
         network.process_input(image)
         sum = sum + (label[Tr.get_result(network.output)] == 1)
-    print(sum / 50)
+
+    print(sum / len(training_set))
 
 
 
