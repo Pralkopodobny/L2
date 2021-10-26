@@ -1,7 +1,7 @@
 import Network as Net
 import Layer as Nl
 import numpy as np
-
+import time
 
 def get_errors_and_gradients(network: Net.Network, expected_solution):
     layers = network.layers
@@ -18,15 +18,10 @@ def get_errors_and_gradients(network: Net.Network, expected_solution):
     deeper_error = last_layer_error
 
     for layer in layers[-2::-1]:  # reversed without last
-        first = np.transpose(deeper_layer.weights)
-        sec = deeper_error
-        third = layer.derivative(layer.z)
-        error = first @ sec * third
-        #print(f"{error.shape}, {np.transpose(layer.input).shape}")
-        gradient = error @ np.transpose(layer.input)
+        error = np.transpose(deeper_layer.weights) @ deeper_error * layer.derivative(layer.z)
 
         errors.append(error)
-        gradients.append(gradient)
+        gradients.append(error @ np.transpose(layer.input))
 
         deeper_layer = layer
         deeper_error = error
@@ -42,14 +37,9 @@ def epoch(network: Net.Network, training_set, alpha=0.1):
         mini_bath_errors.append(errors)
         mini_bath_gradients.append(gradients)
 
-    mini_bath_average_gradients = average(mini_bath_gradients)
-    mini_bath_average_errors = average(mini_bath_errors)
-
-    for layer, average_gradient, average_error in zip(network.layers, mini_bath_average_gradients,
-                                                      mini_bath_average_errors):
-        layer.weights = layer.weights - average_gradient * alpha
-        layer.bias = layer.bias - average_error * alpha
-
+    for l, layer in enumerate(network.layers):
+        layer.weights = layer.weights - alpha / len(training_set) * sum([el[l] for el in mini_bath_gradients])
+        layer.bia = layer.bias - alpha / len(training_set) * sum([el[l] for el in mini_bath_errors])
 
 def train_network(network, training_set, batch_size):
     mini_batches_count = -(len(training_set) // -batch_size)
@@ -59,18 +49,6 @@ def train_network(network, training_set, batch_size):
         epoch(network, training_set[index:last_index])
         index = last_index
         last_index = min(last_index + batch_size, len(training_set))
-
-
-def average(table):
-    sums = table[0]
-    averages = []
-    for errors in table[1::]:
-        for i, error in enumerate(errors):
-            sums[i] = sums[i] + error
-    for sum in sums:
-        averages.append(sum / len(table))
-    return averages
-
 
 def Test():
     net = Net.Network(6, [5, 3], [Nl.ReLU, Nl.ReLU], [Nl.ReLu_derivative, Nl.ReLu_derivative], 2)
@@ -87,8 +65,8 @@ def Test():
     expected5 = np.array([0, 1]).reshape((2, 1))
     expected = [expected1, expected2, expected3, expected4, expected5]
     training_set = [list(a) for a in zip(data, expected)]
-    train_network(net, training_set, 2)
-    epoch(net, training_set)
+    train_network(net, training_set, 3)
+    #epoch(net, training_set)
 
 
 if __name__ == '__main__':
