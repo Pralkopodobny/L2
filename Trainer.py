@@ -28,7 +28,7 @@ def get_errors_and_gradients(network: Net.Network, expected_solution):
     return errors[::-1], gradients[::-1]
 
 
-def epoch(network: Net.Network, training_set, alpha=0.1):
+def epoch(network: Net.Network, training_set, alpha=0.6):
     mini_bath_errors = []
     mini_bath_gradients = []
     for data, label in training_set:
