@@ -2,7 +2,7 @@ import Network as Net
 import Layer as Nl
 import numpy as np
 
-epsilon = 0.00000001
+epsilon = 0.001
 
 
 def get_errors_and_gradients(network: Net.Network, expected_solution):

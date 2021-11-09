@@ -5,6 +5,7 @@ import Layer as Nl
 import Trainer as Tr
 import MomentumTrainer as MomentumTr
 import AdagradTrainer as AdagardTr
+import AdadeltaTrainer as AdadeltaTr
 
 
 def prepare_training_set():
@@ -270,6 +271,12 @@ def test_adagard():
     iterations_count = 6
 
     def single_experiment():
+        network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.sigmoid, Nl.sigmoid],
+                              derivatives=[Nl.sigmoid_derivative, Nl.sigmoid_derivative], output_size=10,
+                              standard_deviation=0.3)
+        return AdagardTr.train_network_adagard(network, training_set, validation_set, batch_size=600, alpha=alpha, iterations=iterations_count)
+
+    def single_experiment_relu():
         network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.ReLU, Nl.ReLU],
                               derivatives=[Nl.ReLu_derivative, Nl.ReLu_derivative], output_size=10,
                               standard_deviation=0.3)
@@ -289,6 +296,37 @@ def test_adagard():
     return results_to_text(results, iterations_count)
 
 
+def test_adadelta():
+    training_set = prepare_training_set()
+    validation_set = prepare_validation_set()
+    alpha = 0.7
+    iterations_count = 6
+
+    def single_experiment():
+        network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.sigmoid, Nl.sigmoid],
+                              derivatives=[Nl.sigmoid_derivative, Nl.sigmoid_derivative], output_size=10,
+                              standard_deviation=0.3)
+        return AdadeltaTr.train_network_adadelta(network, training_set, validation_set, batch_size=600, alpha=alpha, iterations=iterations_count)
+
+    def single_experiment_relu():
+        network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.ReLU, Nl.ReLU],
+                              derivatives=[Nl.ReLu_derivative, Nl.ReLu_derivative], output_size=10,
+                              standard_deviation=0.3)
+        return AdadeltaTr.train_network_adadelta(network, training_set, validation_set, batch_size=600, alpha=alpha, iterations=iterations_count)
+
+    results = []
+    results.append(single_experiment_relu())
+
+    def results_to_text(results, iterations):
+        text = "Pomiar;Wynik"
+        for iteration in range(iterations):
+            text = text + f"{iteration + 1}"
+            for result in results:
+                text = text + f";{result[iteration]}"
+            text = text + "\n"
+        return text
+    return results_to_text(results, iterations_count)
+
 
 def some_testing():
     a = np.array([[1, 2], [2, 3]])
@@ -298,12 +336,14 @@ def some_testing():
 
 if __name__ == '__main__':
     #some_testing()
-    text = test_alpha()
+    #text = test_alpha()
     #text = test_standard_deviation()
     #text = test_activation_functions()
     #text = test_layer_sizes()
     #text = test_momentum()
     #text = test_adagard()
+    text = test_adadelta()
+
 
 
     with open("Output.txt", "w") as text_file:
