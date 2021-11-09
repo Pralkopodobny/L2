@@ -38,7 +38,7 @@ def epoch(network: Net.Network, training_set, alpha=0.6):
 
     for l, layer in enumerate(network.layers):
         layer.weights = layer.weights - alpha / len(training_set) * sum([el[l] for el in mini_bath_gradients])
-        layer.bia = layer.bias - alpha / len(training_set) * sum([el[l] for el in mini_bath_errors])
+        layer.bias = layer.bias - alpha / len(training_set) * sum([el[l] for el in mini_bath_errors])
 
 
 def iteration(network, training_set, batch_size, mini_batches_count, alpha=0.6):

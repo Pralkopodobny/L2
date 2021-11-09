@@ -1,11 +1,14 @@
 import numpy as np
 from mnist import MNIST
+
+import AdamTrainer
 import Network as Net
 import Layer as Nl
 import Trainer as Tr
 import MomentumTrainer as MomentumTr
 import AdagradTrainer as AdagardTr
 import AdadeltaTrainer as AdadeltaTr
+import AdamTrainer as AdamTr
 
 
 def prepare_training_set():
@@ -245,6 +248,12 @@ def test_momentum():
     iterations_count = 6
 
     def single_experiment():
+        network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.sigmoid, Nl.sigmoid],
+                              derivatives=[Nl.sigmoid_derivative, Nl.sigmoid_derivative], output_size=10,
+                              standard_deviation=0.3)
+        return MomentumTr.train_network_momentum(network, training_set, validation_set, batch_size=600, alpha=alpha, iterations=iterations_count, momentum_factor=0.1)
+
+    def single_experiment_relu():
         network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.ReLU, Nl.ReLU],
                               derivatives=[Nl.ReLu_derivative, Nl.ReLu_derivative], output_size=10,
                               standard_deviation=0.3)
@@ -252,6 +261,40 @@ def test_momentum():
 
     results = []
     results.append(single_experiment())
+
+    def results_to_text(results, iterations):
+        text = "Pomiar;Wynik"
+        for iteration in range(iterations):
+            text = text + f"{iteration + 1}"
+            for result in results:
+                text = text + f";{result[iteration]}"
+            text = text + "\n"
+        return text
+    return results_to_text(results, iterations_count)
+
+
+def test_momentum_nestrov():
+    training_set = prepare_training_set()
+    validation_set = prepare_validation_set()
+    alpha = 0.7
+    iterations_count = 6
+
+    def single_experiment():
+        network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.sigmoid, Nl.sigmoid],
+                              derivatives=[Nl.sigmoid_derivative, Nl.sigmoid_derivative], output_size=10,
+                              standard_deviation=0.3)
+        return MomentumTr.train_network_momentum_nestrov(network, training_set, validation_set, batch_size=600, alpha=alpha,
+                                                 iterations=iterations_count, momentum_factor=0.1)
+
+    def single_experiment_relu():
+        network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.ReLU, Nl.ReLU],
+                              derivatives=[Nl.ReLu_derivative, Nl.ReLu_derivative], output_size=10,
+                              standard_deviation=0.3)
+        return MomentumTr.train_network_momentum_nestrov(network, training_set, validation_set, batch_size=600, alpha=alpha,
+                                                 iterations=iterations_count, momentum_factor=0.1)
+
+    results = []
+    results.append(single_experiment_relu())
 
     def results_to_text(results, iterations):
         text = "Pomiar;Wynik"
@@ -328,6 +371,38 @@ def test_adadelta():
     return results_to_text(results, iterations_count)
 
 
+def test_adam():
+    training_set = prepare_training_set()
+    validation_set = prepare_validation_set()
+    alpha = 0.7
+    iterations_count = 6
+
+    def single_experiment():
+        network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.sigmoid, Nl.sigmoid],
+                              derivatives=[Nl.sigmoid_derivative, Nl.sigmoid_derivative], output_size=10,
+                              standard_deviation=0.3)
+        return AdadeltaTr.train_network_adadelta(network, training_set, validation_set, batch_size=600, alpha=alpha, iterations=iterations_count)
+
+    def single_experiment_relu():
+        network = Net.Network(input_size=784, sizes=[30, 14], activation_functions=[Nl.ReLU, Nl.ReLU],
+                              derivatives=[Nl.ReLu_derivative, Nl.ReLu_derivative], output_size=10,
+                              standard_deviation=0.3)
+        return AdamTrainer.train_network_adam(network, training_set, validation_set, batch_size=600, alpha=alpha, iterations=iterations_count)
+
+    results = []
+    results.append(single_experiment_relu())
+
+    def results_to_text(results, iterations):
+        text = "Pomiar;Wynik"
+        for iteration in range(iterations):
+            text = text + f"{iteration + 1}"
+            for result in results:
+                text = text + f";{result[iteration]}"
+            text = text + "\n"
+        return text
+    return results_to_text(results, iterations_count)
+
+
 def some_testing():
     a = np.array([[1, 2], [2, 3]])
     print(a[0][0])
@@ -341,8 +416,11 @@ if __name__ == '__main__':
     #text = test_activation_functions()
     #text = test_layer_sizes()
     #text = test_momentum()
+    text = test_momentum_nestrov()
     #text = test_adagard()
-    text = test_adadelta()
+    #text = test_adadelta()
+    #text = test_adam()
+
 
 
 

@@ -70,7 +70,7 @@ def process_mini_batch(network: Net.Network, training_set, squared_previous_grad
         layer.weights = layer.weights - change
 
         bias_change = alpha / len(training_set) * sum([el[l] for el in mini_bath_errors])
-        layer.bia = layer.bias - bias_change
+        layer.bias = layer.bias - bias_change
 
         squared_previous_gradients[l] = squared_previous_gradients[l] + (mean_gradients_in_batch_in_layer * mean_gradients_in_batch_in_layer)
         squared_previous_changes[l] = squared_previous_changes[l] + change * change
